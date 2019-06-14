@@ -21,10 +21,10 @@
           <span>{{song.title}}</span>
           <span>{{song.singer}}</span>
           <div v-if="user">
-            <audio controls v-bind:src="song.url">Your browser does not support the</audio>
-            <button v-on:click="play(song.url)">播放</button>
+            <button v-on:click="playFrom(song.url)">播放</button>
             <button v-on:click="addSong(song.id)">添加入歌单</button>
           </div>
+          <div v-else></div>
         </div>
       </div>
       <div v-else class="grid-container">
@@ -38,30 +38,61 @@
       </div>
       <div class="player">
         <div class="base-control">
-          <ion-icon name="skip-backward"></ion-icon>
-          <ion-icon name="skip-forward"></ion-icon>
+          <div v-on:click="playPrev">
+            <MdSkipBackwardIcon></MdSkipBackwardIcon>
+          </div>
+          <div @click="play" v-if="audioStatus">
+            <MdPlayIcon></MdPlayIcon>
+          </div>
+          <div @click="pauseAudio" v-else>
+            <MdPauseIcon></MdPauseIcon>
+          </div>
+          <div v-on:click="playNext">
+            <MdSkipForwardIcon></MdSkipForwardIcon>
+          </div>
         </div>
-        <div class="jdt">
-          <ion-icon class="pin" name="happy"></ion-icon>
+        <div class="jdt" @click="changeTime" ref="jdt">
+          <div class="pin" ref="pin">
+            <MdLeafIcon></MdLeafIcon>
+          </div>
+          <div class="audio-text">{{auText}}</div>
         </div>
-        <audio src="/static/audio/yiban.mp3"></audio>
-        <button v-on:click="showSong">显示</button>
+        <audio ref="audio"></audio>
+<!--        <button v-on:click="showSong">显示</button>-->
       </div>
     </div>
 </template>
 
 <script>
   import jwt from 'jsonwebtoken'
+  import MdPlayIcon from 'vue-ionicons/dist/md-play.vue'
+  import MdSkipForwardIcon from 'vue-ionicons/dist/md-skip-forward.vue'
+  import MdSkipBackwardIcon from 'vue-ionicons/dist/md-skip-backward.vue'
+  import MdPauseIcon from 'vue-ionicons/dist/md-pause.vue'
+  import MdLeafIcon from 'vue-ionicons/dist/md-leaf.vue'
+
 
   export default {
         name: "index",
+    components:{
+      MdPlayIcon,
+      MdSkipBackwardIcon,
+      MdSkipForwardIcon,
+      MdPauseIcon,
+      MdLeafIcon
+    },
       data(){
           return {
             user_exist:'',
             user:{},
             songs:[],
             mysongs:[],
-            allSongs:true
+            allSongs:true,
+            currenturl:'static/audio/yiban.mp3',
+            urllist:[],
+            audioStatus:true,
+            inter : '',
+            auText:''
           }
       },
       methods:{
@@ -116,28 +147,85 @@
               this.getMySong
             )
         },
-        play(song_url){
-          let pa = song_url.replace('src/','../')
-          console.log(pa)
-          let myAudio = new Audio(require(pa))
+        play(){
+          clearInterval(this.inter)
+          let myAudio = this.$refs.audio
+          console.log(this.urllist)
+          // v-bind会有延迟 ， v-model又不能用 所以直接修改 Attribute:src
+          if ( myAudio.src !== 'http://localhost:8080'+encodeURI(this.currenturl)){
+            myAudio.src = this.currenturl
+            for (let i=0;i<this.urllist.length;i++){
+              if ('/'+this.urllist[i].url===this.currenturl) {
+                this.auText = this.urllist[i].title+'-'+this.urllist[i].singer
+              }
+            }
+          }
           myAudio.play()
-            .then(value => {
-              console.log(value)
-            })
-            .catch(e=>{
-              console.log(e)
-            })
+          // console.log(myAudio.played)
+          this.audioStatus = false
+          this.inter = setInterval(()=>{
+            this.$refs.pin.style.left = myAudio.currentTime/myAudio.duration*100+'%'
+            // console.log(myAudio.currentTime/myAudio.duration)
+          },1000)
+          myAudio.addEventListener('complete',()=>{
+            this.playNext()
+          })
+        },
+        pauseAudio(){
+          let myAudio = this.$refs.audio
+          myAudio.pause()
+          this.toggleAudioStatus()
+          clearInterval(this.inter)
+        },
+        toggleAudioStatus(){
+          this.audioStatus = !this.audioStatus
+        },
+        playFrom(song_url){
+          if (this.user) {
+            this.urllist = this.songs
+          }else{
+            this.urllist = this.mysongs
+          }
+          this.currenturl = song_url.replace('static','/static')
+          this.play()
+        },
+        playPrev(){
+
+        },
+        playNext(){
+          // console.log(this.currenturl)
+          // console.log(this.urllist)
+          for (let i=0;i<this.urllist.length;i++) {
+            if (this.urllist[i].url.replace('static','/static')===this.currenturl) {
+              if (i+1<this.urllist.length){
+                this.currenturl = this.urllist[++i].url.replace('static','/static')
+              } else {
+                this.currenturl = this.urllist[0].url.replace('static','/static')
+              }
+              this.play()
+            }
+          }
+        },
+        changeTime(){
+          let audio = this.$refs.audio,
+            pin = this.$refs.pin,
+            jdt = this.$refs.jdt,
+            mouseX = event.clientX,
+            jdtLeft = this.$refs.jdt.getBoundingClientRect().left,
+            jdtRight = jdt.getBoundingClientRect().right,
+            jdtLength = jdtRight - jdtLeft,
+            relativeX = mouseX - jdtLeft,
+            perc = relativeX / jdtLength
+          if (event.target === jdt){
+            pin.style.left = perc*100+'%'
+            audio.currentTime = audio.duration * perc
+          }
         }
       },
     created() {
       this.getUser()
       this.getSongs()
       this.getMySong()
-    },
-    beforeMount() {
-      let ionicon = document.createElement('script')
-      ionicon.setAttribute('src','https://unpkg.com/ionicons@4.5.9-1/dist/ionicons.js')
-      document.body.appendChild(ionicon)
     }
   }
 </script>
@@ -152,13 +240,14 @@
 
   .jdt>.pin{
     position: absolute;
-    bottom: 80%;
+    bottom: 0;
     left: 0;
     transform: translateX(-50%);
     /*z-index: 999;*/
   }
 
   .base-control{
+    display: flex;
     margin-right: 15px;
   }
 
