@@ -16,8 +16,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.CHAR(8),
       allowNull: false
     },
-    url:{
-      type: DataTypes.STRING,
+    url: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    isVip: {
+      type: DataTypes.INTEGER(1),
       allowNull: true
     }
   }, {

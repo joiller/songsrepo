@@ -23,6 +23,14 @@ const findUserAtLog = async function (data) {
   })
 }
 
+// User.update({
+//   isVip: true
+// },{
+//   where: {
+//     name: 'jhl'
+//   }
+// })
+
 export default {
   User,
   createUser,

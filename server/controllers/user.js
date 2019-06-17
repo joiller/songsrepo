@@ -14,11 +14,8 @@ const createUser = async function (ctx) {
 const findUserAtLog = async function (ctx) {
   const user = await User.findUserAtLog(ctx.request.body)
   if (user) {
-    const userToken = {
-      id: user.id,
-      name: user.name,
-      password: user.password
-    }
+    const userToken = user.dataValues
+    console.log(userToken)
     const secretKey = 'user_log_key'
     const token = jwt.sign(userToken,secretKey)
 

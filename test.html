@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <style>
+    div{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .container{
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #2c3e50;
+      width: 100px;
+      height: 200px;
+    }
+
+    .data{
+      background-color: antiquewhite;
+      width: 20%;
+      height: 80%;
+    }
+
+    .pin{
+      background-color: red;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="data">
+    <div class="pin" draggable="true"></div>
+  </div>
+</div>
+<script>
+  let pin = document.getElementsByClassName('pin')[0],
+    data = document.getElementsByClassName('data')[0],
+    container = document.getElementsByClassName('container')[0]
+
+  pin.addEventListener('drag',evt => {
+    console.log(evt.clientY)
+  })
+
+  document.addEventListener('dragover',function(evt) {
+    evt.preventDefault()
+  })
+
+  //
+  // function clicking() {
+  //   console.log('click')
+  // }
+</script>
+</body>
+</html>

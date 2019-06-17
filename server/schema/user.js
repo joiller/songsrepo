@@ -17,7 +17,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     sex: {
-      type: DataTypes.INTEGER(3).UNSIGNED,
+      type: DataTypes.INTEGER(1),
+      allowNull: true
+    },
+    isVip: {
+      type: DataTypes.INTEGER(1),
       allowNull: true
     }
   }, {

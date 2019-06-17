@@ -21,7 +21,9 @@
     "sequelize": "^5.8.8",
     "mysql2": "^1.6.5",
     "jsonwebtoken": "^8.5.1",
-    "vue-ionicons": "^3.0.4"
+    "vue-ionicons": "^3.0.4",
+    "koa-static": "^5.0.0",
+    "koa2-history-api-fallback": "^0.1.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -24,20 +24,12 @@ const getAllSongs = async function(){
 }
 
 
+
 // Song.create({
-//   title: '一半',
+//   title: '方圆几里',
 //   singer: '薛之谦',
-//   url: 'src/assets/songs/yiban.mp3'
-// })
-// Song.create({
-//   title: '下雨了',
-//   singer: '薛之谦',
-//   url: 'src/assets/songs/薛之谦 - 下雨了.mp3'
-// })
-// Song.create({
-//   title: '其实',
-//   singer: '薛之谦',
-//   url: 'src/assets/songs/薛之谦 - 其实.mp3'
+//   url: 'static/audio/薛之谦 - 方圆几里.mp3',
+//   isVip: true
 // })
 
 // Song.update({
