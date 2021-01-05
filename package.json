@@ -17,7 +17,7 @@
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "koa-bodyparser": "^4.2.1",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "sequelize": "^5.8.8",
     "mysql2": "^1.6.5",
     "jsonwebtoken": "^8.5.1",
